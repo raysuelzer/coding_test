@@ -19,8 +19,7 @@
                     return response.json();
                 }));
         }
-
-        // TODO: Move into seperate class
+        
         function getGroupings() {
             return JSON.parse(localStorage.getItem('savedGrouping'));
         }
@@ -30,12 +29,6 @@
             return groupName;
         }
 
-        // NOTE: If there were multiple targets of where
-        //       a person could be dropped, this would 
-        //       have to be implemented in another way. 
-        //       But, the current problem is a binary choice
-        //       of selected or not selected. 
-
         function setGroup(person, groupName) {
             let savedGrouping = getGroupings();
             savedGrouping[person.guid] = groupName;
@@ -43,12 +36,25 @@
         }
         
         return {
-            getRemoteData: getRemoteData,
-            // TODO: Move into seperate class
+            /**
+             * Returns an RxObservable from the 
+             * JSON data source
+             */
+            getRemoteData: getRemoteData,            
+            /**
+             * A list of all the locally stored grouping data.
+             */            
             getGroupings: getGroupings,
+            /**
+             * Given a person, this will return the group
+             * name they belong in from the data store.              
+             */
             getGroupName: getGroupName,
-            setGroup: setGroup
-         
+            /**
+             * Given a person and a group name, will save the information
+             * in the data store.
+             */
+            setGroup: setGroup        
         }
     }
 
