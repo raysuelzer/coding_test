@@ -4,7 +4,7 @@ function CodeTest(dataService, cardRenderer) {
     // find the drop element zone on the 
     // DOM. 
     function getDropZoneEl(groupName) {
-        return $('[data-group-name="'+ groupName +'"]' );
+        return $('[data-group-name="' + groupName + '"]');
     }
 
     return {
@@ -17,13 +17,13 @@ function CodeTest(dataService, cardRenderer) {
                     // Card renderer contains the HTML template.
                     // We convert that template into a jquery Object.
                     let $html = $(cardRenderer.makeCard(person));
-                    
+
                     // Set the person data on the JSON object.
                     // In a large application, the data would be stored
                     // in a dataStore instead of on the person dom object. 
                     // For react or angular, it would be associated with a 'model'.
                     $html.data('person', person);
-                    
+
                     // Return back a mapped object for each of the persons
                     // containing original json data and the html object
                     return {
@@ -31,16 +31,17 @@ function CodeTest(dataService, cardRenderer) {
                         $html: $html
                     };
                 })
-                
-                .subscribe( // Contains three functions, OnNext(item) which is called on each item, 
-                            // OnError(err) 
-                            // and OnComplete() after all items have been received. 
-                
-                
+
+                .subscribe( 
+                // Contains three functions, OnNext(item) which is called on each item, 
+                // OnError(err) 
+                // and OnComplete() after all items have been received. 
+
+
                 function (person) { // On Next    
-                    let groupName = dataService.getGroupName(person.json) ? dataService.getGroupName(person.json) : "left";                    
-                    let $initialDropZone = getDropZoneEl(groupName);                                        
-                    $initialDropZone.append(person.$html);                    
+                    let groupName = dataService.getGroupName(person.json) ? dataService.getGroupName(person.json) : "left";
+                    let $initialDropZone = getDropZoneEl(groupName);
+                    $initialDropZone.append(person.$html);
                 },
 
                 // Error handling
@@ -55,16 +56,18 @@ function CodeTest(dataService, cardRenderer) {
                     // back to the original position if not placed
                     // within a drop zone, or if it is placed in the
                     // same drop zone.
-                    $(".card").draggable({ revert: function(dropTarget){
-                        if (!dropTarget) {
-                            return true;
+                    $(".card").draggable({
+                        revert: function (dropTarget) {
+                            if (!dropTarget) {
+                                return true;
+                            }
+                            if (dataService.getGroupName($(this).data().person) === dropTarget.data().groupName) {
+                                return true;
+                            }
+                            return false;
                         }
-                        if (dataService.getGroupName($(this).data().person) === dropTarget.data().groupName) {
-                            return true;
-                        }
-                        return false;
-                    } });
-                    
+                    });
+
                     // Set up the drop zones to accept
                     // any .card items
                     $(".drop").droppable({
@@ -73,30 +76,31 @@ function CodeTest(dataService, cardRenderer) {
                         // and resize the two drop containers to be the same height.
                         // An enhancement would be to place the item closet to where it was
                         // dropped, but would add complexity. 
-                        drop: function (event, ui) {                            
+                        drop: function (event, ui) {
                             let $droppedItem = $(ui.draggable);
-                            let $targetZone = $(this); 
-                            let person = $droppedItem.data().person;                           
-                            if ($targetZone.data().groupName == dataService.getGroupName(person)){
+                            let $targetZone = $(this);                            
+                            let person = $droppedItem.data().person;
+
+                            if ($targetZone.data().groupName == dataService.getGroupName(person)) {
                                 console.log(ui.draggable);
                                 return;
-                                
+
                             }
                             $droppedItem.detach()
-                                          .css({ top: 0, left: 0 })
-                                          .prependTo($targetZone)
-                                          .effect("shake", {times: 1});
-                                       
+                                .css({ top: 0, left: 0 })
+                                .prependTo($targetZone)
+                                .effect("shake", { times: 1 });
+
                             // Set the heights to be the same size so it's easy
                             // to drag and drop between lists 
                             $('.drop').height($('.drop').height());
 
                             // Call into the data service to store which drop zone
                             // that the user is in using localStorage.
-                            dataService.setGroup($droppedItem.data().person, $targetZone.data().groupName);
-                            
+                            dataService.setGroup(person, $targetZone.data().groupName);
+
                         }
-                    });                    
+                    });
 
                 });
         }

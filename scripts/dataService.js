@@ -9,8 +9,7 @@
         if (localStorage.getItem('savedGrouping') === null) {
             localStorage.setItem('savedGrouping', '{}');
         }
-
-        var self = this;
+        
         let apiUrl = 'http://beta.json-generator.com/api/json/get/VJL5OKWv7';
 
         function getRemoteData() {
