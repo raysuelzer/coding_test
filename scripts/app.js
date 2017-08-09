@@ -11,7 +11,7 @@ function CodeTest(dataService, cardRenderer) {
         init: function () {
             dataService.getRemoteData()
                 .flatMap(function (data) {
-                    return data;
+                    return data; // Will treat data as iterable (it's an array)
                 })
                 .map(function (person) {
                     // Card renderer contains the HTML template.
@@ -53,8 +53,17 @@ function CodeTest(dataService, cardRenderer) {
                     // Set all cards to be draggable.
                     // Revert option puts the draggable object
                     // back to the original position if not placed
-                    // within a drop zone.
-                    $(".card").draggable({ revert: "invalid" });
+                    // within a drop zone, or if it is placed in the
+                    // same drop zone.
+                    $(".card").draggable({ revert: function(dropTarget){
+                        if (!dropTarget) {
+                            return true;
+                        }
+                        if (dataService.getGroupName($(this).data().person) === dropTarget.data().groupName) {
+                            return true;
+                        }
+                        return false;
+                    } });
                     
                     // Set up the drop zones to accept
                     // any .card items
@@ -66,11 +75,17 @@ function CodeTest(dataService, cardRenderer) {
                         // dropped, but would add complexity. 
                         drop: function (event, ui) {                            
                             let $droppedItem = $(ui.draggable);
-                            let $targetZone = $(this);                            
-                            
+                            let $targetZone = $(this); 
+                            let person = $droppedItem.data().person;                           
+                            if ($targetZone.data().groupName == dataService.getGroupName(person)){
+                                console.log(ui.draggable);
+                                return;
+                                
+                            }
                             $droppedItem.detach()
                                           .css({ top: 0, left: 0 })
-                                          .prependTo($targetZone);
+                                          .prependTo($targetZone)
+                                          .effect("shake", {times: 1});
                                        
                             // Set the heights to be the same size so it's easy
                             // to drag and drop between lists 
@@ -81,8 +96,7 @@ function CodeTest(dataService, cardRenderer) {
                             dataService.setGroup($droppedItem.data().person, $targetZone.data().groupName);
                             
                         }
-                    });
-                    $(".drop").sortable();
+                    });                    
 
                 });
         }
