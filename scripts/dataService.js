@@ -10,15 +10,16 @@
             localStorage.setItem('savedGrouping', '{}');
         }
         
+        // Data source
         let apiUrl = 'http://beta.json-generator.com/api/json/get/VJL5OKWv7';
-
+        
         function getRemoteData() {
             return Rx.Observable.fromPromise(
                 fetch(apiUrl).then((response) => {
                     return response.json();
                 }));
         }
-        
+
         function getGroupings() {
             return JSON.parse(localStorage.getItem('savedGrouping'));
         }
@@ -34,6 +35,7 @@
             localStorage.setItem('savedGrouping', JSON.stringify(savedGrouping));
         }
         
+        // Public API
         return {
             /**
              * Returns an RxObservable from the 

@@ -18,6 +18,7 @@ function CodeTest(dataService, cardRenderer) {
                 .flatMap(function (data) {
                     return data; // Will treat data as iterable (it's an array)
                 })
+                // We are now iterating over each person object
                 .map(function (person) {
                     // Card renderer contains the HTML template.
                     // We convert that template into a jquery Object.
@@ -65,12 +66,17 @@ function CodeTest(dataService, cardRenderer) {
                     // same drop zone.
                     $(".card").draggable({
                         revert: function (dropTarget) {
+                            // Dropped outside of a drop zone
                             if (!dropTarget) {
-                                return true;
+                                return true; // revert
                             }
-                            if (dataService.getGroupName($(this).data().person) === dropTarget.data().groupName) {
-                                return true;
+                            // If the drop target is the same as the current 
+                            // drop target of the person, then revert to original position.
+                            let savedGroup = dataService.getGroupName($(this).data().person);
+                            if (savedGroup === dropTarget.data().groupName) {
+                                return true; //revert
                             }
+                            // Should not revert
                             return false;
                         }
                     });
@@ -84,27 +90,32 @@ function CodeTest(dataService, cardRenderer) {
                         // An enhancement would be to place the item closet to where it was
                         // dropped, but would add complexity. 
                         drop: function (event, ui) {
-                            let $droppedItem = $(ui.draggable);
-                            let $targetZone = $(this);                            
-                            let person = $droppedItem.data().person;
+                            let $droppedItem = $(ui.draggable),
+                                $targetZone = $(this),                            
+                                person = $droppedItem.data().person,
+                                targetZoneGroup = $targetZone.data().groupName;
 
-                            if ($targetZone.data().groupName == dataService.getGroupName(person)) {
-                                console.log(ui.draggable);
+                            // Ignore if dropped in same group.    
+                            if (targetZoneGroup == dataService.getGroupName(person)) {                                
                                 return;
-
                             }
+
+                            // Remove the dropped item from current dropzone
+                            // Move to new drop zone.
+                            // And shake so user notices it.
                             $droppedItem.detach()
                                 .css({ top: 0, left: 0 })
                                 .prependTo($targetZone)
                                 .effect("shake", {times: 1});
                                 
 
-                            // Set the heights to be the same size so it's easy
-                            // to drag and drop between lists 
+                            // Resize the drop zones so that they are both
+                            // the same height. This makes it easier to 
+                            // drag and drop between sides. 
                             resizeDropZones();
                            
-                            // Call into the data service to store which drop zone
-                            // that the user is in using localStorage.
+                            // Call into the data service to persist the drop zone
+                            // for the person
                             dataService.setGroup(person, $targetZone.data().groupName);
 
                         }
