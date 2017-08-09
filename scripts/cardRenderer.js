@@ -1,16 +1,11 @@
 (function (window) {
-    // Little trick to prevent issues with closures
 
-    function init() {
-        var self = this;
-        return {
+    this.cardRenderer = {
             makeCard: function (person) {
-                return `<div>
-                        ${person.name.first} ${person.name.last}
+                return `<div class="card">
+                        ${person.name.first} ${person.name.last}<br>
+                        ${person.email}
                         </div>`;
             }
         };
-    }
-
-    this.cardRenderer = init();
 })(this);
