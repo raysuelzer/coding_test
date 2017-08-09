@@ -7,6 +7,11 @@ function CodeTest(dataService, cardRenderer) {
         return $('[data-group-name="' + groupName + '"]');
     }
 
+    function resizeDropZones() {
+           let largestHeight = $('.drop').map(function(e) { return $(this).height()}).toArray().sort((a,b) => b-a)[0];                         
+           $('.drop').css({'min-height': largestHeight+'px'});
+    }
+
     return {
         init: function () {
             dataService.getRemoteData()
@@ -18,10 +23,9 @@ function CodeTest(dataService, cardRenderer) {
                     // We convert that template into a jquery Object.
                     let $html = $(cardRenderer.makeCard(person));
 
-                    // Set the person data on the JSON object.
+                    // Set the person data on the jQuery object.
                     // In a large application, the data would be stored
-                    // in a dataStore instead of on the person dom object. 
-                    // For react or angular, it would be associated with a 'model'.
+                    // in a data store instead of on the person dom object.                     
                     $html.data('person', person);
 
                     // Return back a mapped object for each of the persons
@@ -51,6 +55,9 @@ function CodeTest(dataService, cardRenderer) {
                 // After all the items have been added to the DOM
                 // add the event listeners
                 function () {
+                    //Set initial drop zone heights;
+                    resizeDropZones();
+                    
                     // Set all cards to be draggable.
                     // Revert option puts the draggable object
                     // back to the original position if not placed
@@ -88,14 +95,13 @@ function CodeTest(dataService, cardRenderer) {
                             }
                             $droppedItem.detach()
                                 .css({ top: 0, left: 0 })
-                                .prependTo($targetZone);
+                                .prependTo($targetZone)
+                                .effect("shake", {times: 1});
                                 
 
                             // Set the heights to be the same size so it's easy
                             // to drag and drop between lists 
-                            let largestHeight = () => { return $('.drop').map(function(e) { return $(this).height()}).toArray().sort((a,b) => b-a)[0]};
-                            console.log(largestHeight());
-                            $('.drop').css({'min-height': largestHeight()+'px'});
+                            resizeDropZones();
                            
                             // Call into the data service to store which drop zone
                             // that the user is in using localStorage.
