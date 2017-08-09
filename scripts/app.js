@@ -88,13 +88,15 @@ function CodeTest(dataService, cardRenderer) {
                             }
                             $droppedItem.detach()
                                 .css({ top: 0, left: 0 })
-                                .prependTo($targetZone)
-                                .effect("shake", { times: 1 });
+                                .prependTo($targetZone);
+                                
 
                             // Set the heights to be the same size so it's easy
                             // to drag and drop between lists 
-                            $('.drop').height($('.drop').height());
-
+                            let largestHeight = () => { return $('.drop').map(function(e) { return $(this).height()}).toArray().sort((a,b) => b-a)[0]};
+                            console.log(largestHeight());
+                            $('.drop').css({'min-height': largestHeight()+'px'});
+                           
                             // Call into the data service to store which drop zone
                             // that the user is in using localStorage.
                             dataService.setGroup(person, $targetZone.data().groupName);
